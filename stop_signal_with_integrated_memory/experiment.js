@@ -1293,8 +1293,8 @@ var simpleTestNode = {
     if (acc <= accuracyThresh) feedbackText += `<p class=block-text>Your accuracy is low. Remember:</p>${simpleStopPromptTextList}`;
     if (avgRT > rtThresh) feedbackText += `<p class=block-text>You have been responding too slowly.</p>${speedReminder}`;
     if (missed > missedResponseThresh) feedbackText += `<p class=block-text>You have missed trials. Respond as quickly and accurately as possible.</p>`;
-    if (stopRate >= maxStopCorrect) feedbackText += `<p class=block-text>You have not been stopping when stars are present. Please try to stop.</p>`;
-    if (stopRate <= minStopCorrect) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
+    if (stopRate <= minStopCorrect) feedbackText += `<p class=block-text>You have not been stopping when stars are present. Please try to stop.</p>`;
+    if (stopRate >= maxStopCorrect) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
     feedbackText += '<p class=block-text>Press <i>enter</i> to continue.</p></div>';
 
     stims_simple = createSimpleTrialTypes(numTrialsPerSimpleBlock);
