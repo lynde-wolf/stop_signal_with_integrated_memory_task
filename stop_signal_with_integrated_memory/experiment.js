@@ -501,10 +501,10 @@ var sumInstructTime = 0;
 var instructTimeThresh = 1;
 var runAttentionChecks = true;
 
-var goPracticeLen = 10;
+var goPracticeLen = 6;
 var simpleStopPracticeLen = 10;
-var memoryPracticeLen = 10;
-var integratedPracticeLen = 10;
+var memoryPracticeLen = 12;
+var integratedPracticeLen = 12;
 var numTrialsPerSimpleBlock = 30;
 var numTrialsPerIntegratedBlock = 36;
 var numSimpleTestBlocks = 6;
@@ -1067,15 +1067,16 @@ var simpleStopPracticeNode = {
         }
       }
     }
-    var avgRT = goRT / goResp, missed = (goLen - goResp) / goLen, acc = goCorrect / goLen, stopRate = stopResp / stopLen;
-    if (simpleStopPracticeCount == practiceThresh || (acc > practiceAccuracyThresh && avgRT <= rtThresh && missed <= missedResponseThresh && stopRate > minStopCorrectPractice && stopRate < maxStopCorrectPractice)) {
+    var avgRT = goRT / goResp, missed = (goLen - goResp) / goLen, acc = goCorrect / goLen, stopFailureRate = stopResp / stopLen;
+    if (simpleStopPracticeCount == practiceThresh || (acc > practiceAccuracyThresh && avgRT <= rtThresh && missed <= missedResponseThresh && stopFailureRate > minStopCorrectPractice && stopFailureRate < maxStopCorrectPractice)) {
       practiceStage = 'memory_only'; return false;
     }
     feedbackText = '<div class=centerbox><p class=block-text>Please take this time to read your feedback!</p>';
     if (acc <= practiceAccuracyThresh) feedbackText += `<p class=block-text>Your accuracy is low. Remember:</p>${simpleStopPromptTextList}`;
     if (avgRT > rtThresh) feedbackText += `<p class=block-text>You have been responding too slowly.</p>${speedReminder}`;
-    if (stopRate === maxStopCorrectPractice) feedbackText += `<p class=block-text>You have not been stopping when stars are present. Please try to stop.</p>`;
-    if (stopRate === minStopCorrectPractice) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
+    if (stopFailureRate === maxStopCorrectPractice) feedbackText += `<p class=block-text>You have not been stopping when stars are present. Please try to stop.</p>`;
+    if (stopFailureRate === minStopCorrectPractice) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
+    feedbackText += `<p class=block-text>Key reminders:</p>${simpleStopPromptTextList}`;
     feedbackText += `<p class=block-text>We are now going to repeat the practice.</p><p class=block-text>Press <i>enter</i> to begin.</p></div>`;
     stims_simple = createSimpleTrialTypes(simpleStopPracticeLen);
     return true;
@@ -1215,8 +1216,8 @@ var integratedPracticeNode = {
         }
       }
     }
-    var avgRT = goRT / goResp, missed = (goLen - goResp) / goLen, acc = goCorrect / goLen, stopRate = stopResp / stopLen;
-    if (practiceCount == practiceThresh || (acc > practiceAccuracyThresh && avgRT <= letterRtThresh && missed <= missedResponseThresh && stopRate > minStopCorrectPractice && stopRate < maxStopCorrectPractice)) {
+    var avgRT = goRT / goResp, missed = (goLen - goResp) / goLen, acc = goCorrect / goLen, stopFailureRate = stopResp / stopLen;
+    if (practiceCount == practiceThresh || (acc > practiceAccuracyThresh && avgRT <= letterRtThresh && missed <= missedResponseThresh && stopFailureRate > minStopCorrectPractice && stopFailureRate < maxStopCorrectPractice)) {
       feedbackText = `<div class="centerbox"><p class="block-text">We will now begin the test portion.</p><p class="block-text">Keep both hands on the keys.</p><p class="block-text">Press <i>enter</i> to continue.</p></div>`;
       expStage = 'test';
       return false;
@@ -1225,8 +1226,9 @@ var integratedPracticeNode = {
     if (acc <= practiceAccuracyThresh) feedbackText += `<p class=block-text>Your accuracy is low. Remember:</p>${integratedPromptTextList}`;
     if (avgRT > letterRtThresh) feedbackText += `<p class=block-text>You have been responding too slowly.</p>${speedReminder}`;
     if (missed > missedResponseThresh) feedbackText += `<p class=block-text>You have missed trials. Respond as quickly and accurately as possible.</p>`;
-    if (stopRate === maxStopCorrectPractice) feedbackText += `<p class=block-text>You have not been stopping when stars are present.</p>`;
-    if (stopRate === minStopCorrectPractice) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
+    if (stopFailureRate === maxStopCorrectPractice) feedbackText += `<p class=block-text>You have not been stopping when stars are present.</p>`;
+    if (stopFailureRate === minStopCorrectPractice) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
+    feedbackText += `<p class=block-text>Key reminders:</p>${integratedPromptTextList}`;
     feedbackText += `<p class=block-text>We are now going to repeat the practice.</p><p class=block-text>Press <i>enter</i> to begin.</p></div>`;
     stims_integrated = createIntegratedTrialTypes(integratedPracticeLen);
     return true;
@@ -1280,7 +1282,7 @@ var simpleTestNode = {
         }
       }
     }
-    var avgRT = goRT / goResp, missed = (goLen - goResp) / goLen, acc = goCorrect / goLen, stopRate = stopResp / stopLen;
+    var avgRT = goRT / goResp, missed = (goLen - goResp) / goLen, acc = goCorrect / goLen, stopFailureRate = stopResp / stopLen;
 
     currentAttentionCheckData = attentionCheckData.shift();
 
@@ -1293,8 +1295,9 @@ var simpleTestNode = {
     if (acc <= accuracyThresh) feedbackText += `<p class=block-text>Your accuracy is low. Remember:</p>${simpleStopPromptTextList}`;
     if (avgRT > rtThresh) feedbackText += `<p class=block-text>You have been responding too slowly.</p>${speedReminder}`;
     if (missed > missedResponseThresh) feedbackText += `<p class=block-text>You have missed trials. Respond as quickly and accurately as possible.</p>`;
-    if (stopRate <= minStopCorrect) feedbackText += `<p class=block-text>You have not been stopping when stars are present. Please try to stop.</p>`;
-    if (stopRate >= maxStopCorrect) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
+    if (stopFailureRate >= maxStopCorrect) feedbackText += `<p class=block-text>You have not been stopping when stars are present. Please try to stop.</p>`;
+    if (stopFailureRate <= minStopCorrect) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
+    feedbackText += `<p class=block-text>Key reminders:</p>${simpleStopPromptTextList}`;
     feedbackText += '<p class=block-text>Press <i>enter</i> to continue.</p></div>';
 
     stims_simple = createSimpleTrialTypes(numTrialsPerSimpleBlock);
@@ -1361,7 +1364,7 @@ var integratedTestNode = {
         }
       }
     }
-    var avgRT = goRT / goResp, missed = (goLen - goResp) / goLen, acc = goCorrect / goLen, stopRate = stopResp / stopLen;
+    var avgRT = goRT / goResp, missed = (goLen - goResp) / goLen, acc = goCorrect / goLen, stopFailureRate = stopResp / stopLen;
     var SSD_0_percentage = SSDs.filter(function (x) { return x == 0; }).length / SSDs.length;
 
     currentAttentionCheckData = attentionCheckData.shift();
@@ -1375,8 +1378,9 @@ var integratedTestNode = {
     if (acc <= accuracyThresh) feedbackText += `<p class=block-text>Your accuracy is low. Remember:</p>${integratedPromptTextList}`;
     if (avgRT > letterRtThresh) feedbackText += `<p class=block-text>You have been responding too slowly.</p>${speedReminder}`;
     if (missed > missedResponseThresh) feedbackText += `<p class=block-text>You have missed trials. Respond as quickly and accurately as possible.</p>`;
-    if (stopRate >= maxStopCorrect) feedbackText += `<p class=block-text>You have not been stopping when stars are present. Please try to stop.</p>`;
-    if (stopRate <= minStopCorrect || SSD_0_percentage < 0.5) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
+    if (stopFailureRate >= maxStopCorrect) feedbackText += `<p class=block-text>You have not been stopping when stars are present. Please try to stop.</p>`;
+    if (stopFailureRate <= minStopCorrect || SSD_0_percentage < 0.5) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
+    feedbackText += `<p class=block-text>Key reminders:</p>${integratedPromptTextList}`;
     feedbackText += '<p class=block-text>Press <i>enter</i> to continue.</p></div>';
 
     stims_integrated = createIntegratedTrialTypes(numTrialsPerIntegratedBlock);

@@ -53,7 +53,7 @@ globalThis.dataSync = function () {};
 const fs = require('fs');
 const vm = require('vm');
 const path = require('path');
-const src = fs.readFileSync(path.resolve(__dirname, '..', 'experiment.js'), 'utf8');
+const src = fs.readFileSync(path.resolve(__dirname, '..', 'stop_signal_with_integrated_memory', 'experiment.js'), 'utf8');
 vm.runInThisContext(src, { filename: 'experiment.js' });
 
 // Dispatch command from argv
@@ -79,6 +79,12 @@ switch (cmd.fn) {
   case 'shuffleArray':
     result = shuffleArray(cmd.args[0]);
     break;
+  case 'shuffleArrayWithMutationCheck': {
+    var inputBefore = JSON.parse(JSON.stringify(cmd.args[0]));
+    var output = shuffleArray(cmd.args[0]);
+    result = { inputBefore: inputBefore, inputAfter: cmd.args[0], output: output };
+    break;
+  }
   case 'buildSpatialLetterHTML':
     result = buildSpatialLetterHTML(cmd.args[0]);
     break;
@@ -117,8 +123,100 @@ switch (cmd.fn) {
       practiceAccuracyThresh,
       goCorrectPracticeThresh,
       memoryCorrectPracticeThresh,
+      maxSSD,
+      minSSD,
+      stimStimulusDuration,
+      stimTrialDuration,
+      accuracyThresh,
+      rtThresh,
+      letterRtThresh,
+      missedResponseThresh,
+      maxStopCorrect,
+      minStopCorrect,
     };
     break;
+  case 'appendSimpleStopData': {
+    // args: [data, stimDataOverride, ssd_simple_init, conditionOverride, correctResponseOverride]
+    var data = cmd.args[0];
+    stimData = cmd.args[1];
+    SSD_simple = cmd.args[2] !== undefined ? cmd.args[2] : 250;
+    condition = cmd.args[1].condition;
+    correct_response = cmd.args[4] !== undefined ? cmd.args[4] : cmd.args[1].correct_response;
+    expStage = cmd.args[5] || 'practice';
+    appendSimpleStopData(data);
+    result = { data: data, SSD_simple: SSD_simple };
+    break;
+  }
+  case 'appendIntegratedProbeData': {
+    // args: [data, stimDataOverride, presentationData, ssd2, ssd4, ssd6]
+    var data = cmd.args[0];
+    stimData = cmd.args[1];
+    var presentationData = cmd.args[2];
+    SSD_2 = cmd.args[3] !== undefined ? cmd.args[3] : 250;
+    SSD_4 = cmd.args[4] !== undefined ? cmd.args[4] : 250;
+    SSD_6 = cmd.args[5] !== undefined ? cmd.args[5] : 250;
+    condition = cmd.args[1].stop_condition;
+    correct_response = cmd.args[1].correct_response;
+    expStage = cmd.args[6] || 'practice';
+    appendIntegratedProbeData(data, presentationData);
+    result = { data: data, SSD_2: SSD_2, SSD_4: SSD_4, SSD_6: SSD_6 };
+    break;
+  }
+  case 'appendGoTrialData': {
+    var data = cmd.args[0];
+    stimData = cmd.args[1];
+    correct_response = cmd.args[1].correct_response;
+    condition = cmd.args[1].condition;
+    expStage = cmd.args[2] || 'practice';
+    appendGoTrialData(data);
+    result = data;
+    break;
+  }
+  case 'appendMemoryOnlyProbeData': {
+    var data = cmd.args[0];
+    stimData = cmd.args[1];
+    correct_response = cmd.args[1].correct_response;
+    appendMemoryOnlyProbeData(data);
+    result = data;
+    break;
+  }
+  case 'appendMemoryPresentationData': {
+    var data = cmd.args[0];
+    stimData = cmd.args[1];
+    expStage = cmd.args[2] || 'practice';
+    appendMemoryPresentationData(data);
+    result = data;
+    break;
+  }
+  case 'getMemoryOnlyPresentationStim': {
+    memoryOnlyStims = [cmd.args[0]];
+    var html = getMemoryOnlyPresentationStim();
+    result = { html: html, selectedLetters: lastShownLetters };
+    break;
+  }
+  case 'getIntegratedPresentationStim': {
+    stims_integrated = [cmd.args[0]];
+    var html = getIntegratedPresentationStim();
+    result = { html: html, selectedLetters: lastShownLetters };
+    break;
+  }
+  case 'integratedHandoff': {
+    stims_integrated = [cmd.args[0]];
+    var presHtml = getIntegratedPresentationStim();
+    var presStimData = JSON.parse(JSON.stringify(stimData));
+    var presLetters = lastShownLetters;
+    var probeHtml = getIntegratedProbeStim();
+    var probeStimData = JSON.parse(JSON.stringify(stimData));
+    result = {
+      presHtml: presHtml,
+      presStimData: presStimData,
+      presLetters: presLetters,
+      probeHtml: probeHtml,
+      probeStimData: probeStimData,
+      stimsRemainingLength: stims_integrated.length,
+    };
+    break;
+  }
   default:
     result = { error: 'Unknown function: ' + cmd.fn };
 }
