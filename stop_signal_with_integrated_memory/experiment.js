@@ -1,6 +1,6 @@
 /* ************************************ */
 /*       Define Helper Functions        */
-/* Version 1.1.0 March 11, 2026 LWG*/
+/* Version 1.2.0 March 13, 2026 LWG*/
 /* ************************************ */
 var meanITI = 0.5;
 
@@ -1366,7 +1366,7 @@ var integratedTestNode = {
       }
     }
     var avgRT = goRT / goResp, missed = (goLen - goResp) / goLen, acc = goCorrect / goLen, stopFailureRate = stopResp / stopLen;
-    var SSD_0_percentage = SSDs.filter(function (x) { return x == 0; }).length / SSDs.length;
+
 
     currentAttentionCheckData = attentionCheckData.shift();
 
@@ -1380,7 +1380,7 @@ var integratedTestNode = {
     if (avgRT > letterRtThresh) feedbackText += `<p class=block-text>You have been responding too slowly.</p>${speedReminder}`;
     if (missed > missedResponseThresh) feedbackText += `<p class=block-text>You have missed trials. Respond as quickly and accurately as possible.</p>`;
     if (stopFailureRate >= maxStopCorrect) feedbackText += `<p class=block-text>You have not been stopping when stars are present. Please try to stop.</p>`;
-    else if (stopFailureRate <= minStopCorrect || SSD_0_percentage < 0.5) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
+    else if (stopFailureRate <= minStopCorrect) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
     if (acc <= accuracyThresh) feedbackText += `<p class=block-text>Key reminders:</p>${integratedPromptTextList}`;
     feedbackText += '<p class=block-text>Press <i>enter</i> to continue.</p></div>';
 
