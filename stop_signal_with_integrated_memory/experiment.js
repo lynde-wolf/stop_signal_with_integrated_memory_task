@@ -1,6 +1,6 @@
 /* ************************************ */
 /*       Define Helper Functions        */
-/* Version 1.2.0 March 13, 2026 LWG*/
+/* Version 1.2.1 March 13, 2026 LWG*/
 /* ************************************ */
 var meanITI = 0.5;
 
@@ -1076,8 +1076,7 @@ var simpleStopPracticeNode = {
     if (acc <= practiceAccuracyThresh) feedbackText += `<p class=block-text>Your accuracy is low. Remember:</p>${simpleStopPromptTextList}`;
     if (avgRT > rtThresh) feedbackText += `<p class=block-text>You have been responding too slowly.</p>${speedReminder}`;
     if (stopFailureRate === maxStopCorrectPractice) feedbackText += `<p class=block-text>You have not been stopping when stars are present. Please try to stop.</p>`;
-    else if (stopFailureRate === minStopCorrectPractice) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
-    if (acc <= practiceAccuracyThresh) feedbackText += `<p class=block-text>Key reminders:</p>${simpleStopPromptTextList}`;
+    else if (stopFailureRate === minStopCorrectPractice && missed <= missedResponseThresh) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
     feedbackText += `<p class=block-text>We are now going to repeat the practice.</p><p class=block-text>Press <i>enter</i> to begin.</p></div>`;
     stims_simple = createSimpleTrialTypes(simpleStopPracticeLen);
     return true;
@@ -1228,8 +1227,7 @@ var integratedPracticeNode = {
     if (avgRT > letterRtThresh) feedbackText += `<p class=block-text>You have been responding too slowly.</p>${speedReminder}`;
     if (missed > missedResponseThresh) feedbackText += `<p class=block-text>You have missed trials. Respond as quickly and accurately as possible.</p>`;
     if (stopFailureRate === maxStopCorrectPractice) feedbackText += `<p class=block-text>You have not been stopping when stars are present.</p>`;
-    else if (stopFailureRate === minStopCorrectPractice) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
-    if (acc <= practiceAccuracyThresh) feedbackText += `<p class=block-text>Key reminders:</p>${integratedPromptTextList}`;
+    else if (stopFailureRate === minStopCorrectPractice && missed <= missedResponseThresh) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
     feedbackText += `<p class=block-text>We are now going to repeat the practice.</p><p class=block-text>Press <i>enter</i> to begin.</p></div>`;
     stims_integrated = createIntegratedTrialTypes(integratedPracticeLen);
     return true;
@@ -1297,8 +1295,7 @@ var simpleTestNode = {
     if (avgRT > rtThresh) feedbackText += `<p class=block-text>You have been responding too slowly.</p>${speedReminder}`;
     if (missed > missedResponseThresh) feedbackText += `<p class=block-text>You have missed trials. Respond as quickly and accurately as possible.</p>`;
     if (stopFailureRate >= maxStopCorrect) feedbackText += `<p class=block-text>You have not been stopping when stars are present. Please try to stop.</p>`;
-    else if (stopFailureRate <= minStopCorrect) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
-    if (acc <= accuracyThresh) feedbackText += `<p class=block-text>Key reminders:</p>${simpleStopPromptTextList}`;
+    else if (stopFailureRate <= minStopCorrect && missed <= missedResponseThresh) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
     feedbackText += '<p class=block-text>Press <i>enter</i> to continue.</p></div>';
 
     stims_simple = createSimpleTrialTypes(numTrialsPerSimpleBlock);
@@ -1380,8 +1377,7 @@ var integratedTestNode = {
     if (avgRT > letterRtThresh) feedbackText += `<p class=block-text>You have been responding too slowly.</p>${speedReminder}`;
     if (missed > missedResponseThresh) feedbackText += `<p class=block-text>You have missed trials. Respond as quickly and accurately as possible.</p>`;
     if (stopFailureRate >= maxStopCorrect) feedbackText += `<p class=block-text>You have not been stopping when stars are present. Please try to stop.</p>`;
-    else if (stopFailureRate <= minStopCorrect) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
-    if (acc <= accuracyThresh) feedbackText += `<p class=block-text>Key reminders:</p>${integratedPromptTextList}`;
+    else if (stopFailureRate <= minStopCorrect && missed <= missedResponseThresh) feedbackText += `<p class=block-text>Please do not slow down and wait for the star.</p>`;
     feedbackText += '<p class=block-text>Press <i>enter</i> to continue.</p></div>';
 
     stims_integrated = createIntegratedTrialTypes(numTrialsPerIntegratedBlock);
