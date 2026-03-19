@@ -1,6 +1,6 @@
 /* ************************************ */
 /*       Define Helper Functions        */
-/* Version 1.2.1 March 13, 2026 LWG*/
+/* Version 1.3.0 March 19, 2026 LWG*/
 /* ************************************ */
 var meanITI = 0.5;
 
@@ -877,6 +877,43 @@ var practiceFixation = {
   },
 };
 
+var memoryIntervalFixation = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
+  choices: ['NO_KEYS'],
+  data: {
+    trial_id: 'memory_interval_fixation',
+    trial_duration: 500,
+    stimulus_duration: 500,
+    exp_stage: 'practice',
+  },
+  post_trial_gap: 0,
+  stimulus_duration: 500,
+  trial_duration: 500,
+  on_finish: (data) => (data['block_num'] = practiceCount),
+  prompt: function () {
+    if (practiceStage === 'memory_only') return memoryPromptText;
+    if (practiceStage === 'full_integrated') return integratedPromptText;
+    return;
+  },
+};
+
+var testMemoryIntervalFixation = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: '<div class = centerbox><div class = fixation>+</div></div>',
+  choices: ['NO_KEYS'],
+  data: {
+    trial_id: 'test_memory_interval_fixation',
+    trial_duration: 500,
+    stimulus_duration: 500,
+    exp_stage: 'test',
+  },
+  post_trial_gap: 0,
+  stimulus_duration: 500,
+  trial_duration: 500,
+  on_finish: (data) => (data['block_num'] = testCount),
+};
+
 var feedbackText =
   '<div class = centerbox><p class = center-block-text>Press <i>enter</i> to begin practice.</p></div>';
 
@@ -1093,7 +1130,7 @@ for (var i = 0; i < memoryPracticeLen; i++) {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: getMemoryOnlyPresentationStim,
     data: { trial_id: 'practice_memory_trial', exp_stage: 'practice', trial_duration: 2000, stimulus_duration: 2000 },
-    choices: ['NO_KEYS'], stimulus_duration: 2000, trial_duration: 2000, response_ends_trial: false, post_trial_gap: 500,
+    choices: ['NO_KEYS'], stimulus_duration: 2000, trial_duration: 2000, response_ends_trial: false, post_trial_gap: 0,
     on_finish: function (data) { appendMemoryPresentationData(data); },
     prompt: memoryPromptText,
   };
@@ -1117,7 +1154,7 @@ for (var i = 0; i < memoryPracticeLen; i++) {
     },
     post_trial_gap: 0, stimulus_duration: 500, trial_duration: 500, response_ends_trial: false,
   };
-  memoryPracticeTrials.push(practiceFixation, memPresentation, memProbe, memFeedback, ITIBlock);
+  memoryPracticeTrials.push(practiceFixation, memPresentation, memoryIntervalFixation, memProbe, memFeedback, ITIBlock);
 }
 
 var memoryPracticeNode = {
@@ -1153,8 +1190,8 @@ for (var i = 0; i < integratedPracticeLen; i++) {
   var intPresentation = {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: getIntegratedPresentationStim,
-    data: { trial_id: 'practice_memory_trial', exp_stage: 'practice', trial_duration: 2500, stimulus_duration: 2000 },
-    choices: ['NO_KEYS'], stimulus_duration: 2000, trial_duration: 2500, response_ends_trial: false, post_trial_gap: 0,
+    data: { trial_id: 'practice_memory_trial', exp_stage: 'practice', trial_duration: 2000, stimulus_duration: 2000 },
+    choices: ['NO_KEYS'], stimulus_duration: 2000, trial_duration: 2000, response_ends_trial: false, post_trial_gap: 0,
     on_finish: function (data) { appendMemoryPresentationData(data); },
     prompt: integratedPromptText,
   };
@@ -1170,13 +1207,13 @@ for (var i = 0; i < integratedPracticeLen; i++) {
     trial_duration: stimTrialDuration,
     response_ends_trial: false,
     SSD: function () {
-      var pres = jsPsych.data.get().last(1).values()[0];
+      var pres = jsPsych.data.get().last(2).values()[0];
       return getIntegratedSSD(pres.stimLength);
     },
     SS_duration: 500,
     post_trial_gap: 0,
     on_finish: function (data) {
-      var pres = jsPsych.data.get().last(2).values()[0];
+      var pres = jsPsych.data.get().last(3).values()[0];
       appendIntegratedProbeData(data, pres);
     },
     prompt: integratedPromptText,
@@ -1198,7 +1235,7 @@ for (var i = 0; i < integratedPracticeLen; i++) {
     },
     post_trial_gap: 0, stimulus_duration: 500, trial_duration: 500, response_ends_trial: false,
   };
-  integratedPracticeTrials.push(practiceFixation, intPresentation, intProbe, intFeedback, ITIBlock);
+  integratedPracticeTrials.push(practiceFixation, intPresentation, memoryIntervalFixation, intProbe, intFeedback, ITIBlock);
 }
 
 var practiceCount = 0;
@@ -1314,7 +1351,7 @@ for (var i = 0; i < numTrialsPerIntegratedBlock; i++) {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: getIntegratedPresentationStim,
     data: { trial_id: 'test_memory_trial', exp_stage: 'test', trial_duration: 2000, stimulus_duration: 2000 },
-    choices: ['NO_KEYS'], stimulus_duration: 2000, trial_duration: 2000, response_ends_trial: false, post_trial_gap: 500,
+    choices: ['NO_KEYS'], stimulus_duration: 2000, trial_duration: 2000, response_ends_trial: false, post_trial_gap: 0,
     on_finish: function (data) { appendMemoryPresentationData(data); },
   };
   var testIntProbe = {
@@ -1329,17 +1366,17 @@ for (var i = 0; i < numTrialsPerIntegratedBlock; i++) {
     trial_duration: stimTrialDuration,
     response_ends_trial: false,
     SSD: function () {
-      var pres = jsPsych.data.get().last(1).values()[0];
+      var pres = jsPsych.data.get().last(2).values()[0];
       return getIntegratedSSD(pres.stimLength);
     },
     SS_duration: 500,
     post_trial_gap: 0,
     on_finish: function (data) {
-      var pres = jsPsych.data.get().last(2).values()[0];
+      var pres = jsPsych.data.get().last(3).values()[0];
       appendIntegratedProbeData(data, pres);
     },
   };
-  integratedTestTrials.push(fixationBlock, testIntPresentation, testIntProbe, ITIBlock);
+  integratedTestTrials.push(fixationBlock, testIntPresentation, testMemoryIntervalFixation, testIntProbe, ITIBlock);
 }
 
 var integratedTestCount = 0;
