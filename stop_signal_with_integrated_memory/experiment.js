@@ -1,6 +1,6 @@
 /* ************************************ */
 /*       Define Helper Functions        */
-/* Version 1.3.3 March 19, 2026 LWG*/
+/* Version 1.3.4 March 19, 2026 LWG*/
 /* ************************************ */
 var meanITI = 0.5;
 
@@ -1465,6 +1465,18 @@ var endBlock = {
   post_trial_gap: 0,
 };
 
+var testKeyReminderBlock = {
+  type: jsPsychHtmlKeyboardResponse,
+  data: { trial_id: 'test_key_reminder', exp_stage: 'test' },
+  stimulus: `<div class=centerbox>
+    <p class=block-text>Before starting the test blocks, here is a reminder of the key bindings:</p>
+    ${simpleStopPromptTextList}
+    <p class=block-text>Press <i>enter</i> to begin the test.</p>
+  </div>`,
+  choices: ['Enter'],
+  post_trial_gap: 0,
+};
+
 /* ************************************ */
 /*         Experiment Timeline          */
 /* ************************************ */
@@ -1513,6 +1525,8 @@ var stop_signal_with_integrated_memory_init = () => {
     func: function () { stims_integrated = createIntegratedTrialTypes(integratedPracticeLen); },
   });
   stop_signal_with_integrated_memory_experiment.push(integratedPracticeNode);
+
+  stop_signal_with_integrated_memory_experiment.push(testKeyReminderBlock);
 
   // Test: Simple stop signal blocks
   stop_signal_with_integrated_memory_experiment.push({
