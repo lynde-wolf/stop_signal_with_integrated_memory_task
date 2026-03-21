@@ -466,9 +466,12 @@ var appendIntegratedProbeData = function (data, presentationData) {
 /* ************************************ */
 var possibleResponses;
 
+// group_index 0–7: indices 0–3 = simple-first, 4–7 = integrated-first
+// Key mappings are determined by group_index % 4 (same four combos as exp 1)
 function getKeyMappingForTask(group_index) {
-  if (group_index <= 1) {
-    if (group_index % 2 === 0) {
+  var keyIndex = group_index % 4;
+  if (keyIndex <= 1) {
+    if (keyIndex % 2 === 0) {
       possibleResponses = [
         ['right hand index finger', ',', 'comma key (,)'],
         ['right hand middle finger', '.', 'period key (.)'],
@@ -484,7 +487,7 @@ function getKeyMappingForTask(group_index) {
       ];
     }
   } else {
-    if (group_index % 2 === 0) {
+    if (keyIndex % 2 === 0) {
       possibleResponses = [
         ['right hand middle finger', '.', 'period key (.)'],
         ['right hand index finger', ',', 'comma key (,)'],
@@ -504,6 +507,8 @@ function getKeyMappingForTask(group_index) {
 
 var group_index =
   typeof window.efVars !== 'undefined' ? window.efVars.group_index : 1;
+
+var simpleFirst = group_index < 4;
 
 getKeyMappingForTask(group_index);
 
@@ -544,7 +549,7 @@ var integratedPracticeLen = 12;
 var numTrialsPerSimpleBlock = 30;
 var numTrialsPerIntegratedBlock = 36;
 var numSimpleTestBlocks = 6;
-var numIntegratedTestBlocks = 6;
+var numIntegratedTestBlocks = 12;
 
 var practiceThresh = 3;
 var accuracyThresh = 0.8;
@@ -1358,7 +1363,11 @@ var simpleTestNode = {
     currentAttentionCheckData = attentionCheckData.shift();
 
     if (simpleTestCount == numSimpleTestBlocks) {
-      feedbackText = `<div class=centerbox><p class=block-text>Done with the shape blocks.</p><p class=block-text>Now you will complete the memory blocks.</p><p class=block-text>Use your <b>left hand</b>: X key and Z key.</p><p class=block-text>Key reminders:</p>${integratedPromptTextList}<p class=block-text>Press <i>enter</i> to continue.</p></div>`;
+      if (simpleFirst) {
+        feedbackText = `<div class=centerbox><p class=block-text>Done with the shape blocks.</p><p class=block-text>Now you will complete the memory blocks.</p><p class=block-text>Use your <b>left hand</b>: X key and Z key.</p><p class=block-text>Key reminders:</p>${integratedPromptTextList}<p class=block-text>Press <i>enter</i> to continue.</p></div>`;
+      } else {
+        feedbackText = `<div class=centerbox><p class=block-text>Done with this task.</p><p class=centerbox>Press <i>enter</i> to continue.</p></div>`;
+      }
       return false;
     }
     feedbackText = '<div class=centerbox><p class=block-text>Please take this time to read your feedback!</p>';
@@ -1440,7 +1449,11 @@ var integratedTestNode = {
     currentAttentionCheckData = attentionCheckData.shift();
 
     if (integratedTestCount == numIntegratedTestBlocks) {
-      feedbackText = `<div class=centerbox><p class=block-text>Done with this task.</p><p class=centerbox>Press <i>enter</i> to continue.</p></div>`;
+      if (!simpleFirst) {
+        feedbackText = `<div class=centerbox><p class=block-text>Done with the memory blocks.</p><p class=block-text>Now you will complete the shape blocks.</p><p class=block-text>Use your <b>right hand</b>: comma key (,) and period key (.).</p><p class=block-text>Key reminders:</p>${simpleStopPromptTextList}<p class=block-text>Press <i>enter</i> to continue.</p></div>`;
+      } else {
+        feedbackText = `<div class=centerbox><p class=block-text>Done with this task.</p><p class=centerbox>Press <i>enter</i> to continue.</p></div>`;
+      }
       return false;
     }
     feedbackText = '<div class=centerbox><p class=block-text>Please take this time to read your feedback!</p>';
@@ -1520,11 +1533,16 @@ var endBlock = {
 var testKeyReminderBlock = {
   type: jsPsychHtmlKeyboardResponse,
   data: { trial_id: 'test_key_reminder', exp_stage: 'test' },
-  stimulus: `<div class=centerbox>
-    <p class=block-text>Before starting the test blocks, here is a reminder of the key bindings:</p>
-    ${simpleStopPromptTextList}
-    <p class=block-text>Press <i>enter</i> to begin the test.</p>
-  </div>`,
+  stimulus: function () {
+    var keyReminder = simpleFirst ? simpleStopPromptTextList : integratedPromptTextList;
+    var blockLabel = simpleFirst ? 'shape' : 'memory';
+    return `<div class=centerbox>
+      <p class=block-text>Before starting the test blocks, here is a reminder of the keys you will use:</p>
+      ${keyReminder}
+      <p class=block-text>You will begin with the ${blockLabel} blocks.</p>
+      <p class=block-text>Press <i>enter</i> to begin the test.</p>
+    </div>`;
+  },
   choices: ['Enter'],
   post_trial_gap: 0,
 };
@@ -1535,6 +1553,11 @@ var testKeyReminderBlock = {
 var stop_signal_with_integrated_memory_experiment = [];
 var stop_signal_with_integrated_memory_init = () => {
   jsPsych.pluginAPI.preloadImages(images);
+
+  jsPsych.data.addProperties({
+    group_index: group_index,
+    block_order: simpleFirst ? 'simple_first' : 'integrated_first',
+  });
 
   stop_signal_with_integrated_memory_experiment.push(fullscreen);
   stop_signal_with_integrated_memory_experiment.push(botFingerprintTrial);
@@ -1581,19 +1604,26 @@ var stop_signal_with_integrated_memory_init = () => {
 
   stop_signal_with_integrated_memory_experiment.push(testKeyReminderBlock);
 
-  // Test: Simple stop signal blocks
-  stop_signal_with_integrated_memory_experiment.push({
+  var simpleSetup = {
     type: jsPsychCallFunction,
     func: function () { stims_simple = createSimpleTrialTypes(numTrialsPerSimpleBlock); },
-  });
-  stop_signal_with_integrated_memory_experiment.push(simpleTestNode);
-
-  // Test: Integrated memory blocks
-  stop_signal_with_integrated_memory_experiment.push({
+  };
+  var integratedSetup = {
     type: jsPsychCallFunction,
     func: function () { stims_integrated = createIntegratedTrialTypes(numTrialsPerIntegratedBlock); },
-  });
-  stop_signal_with_integrated_memory_experiment.push(integratedTestNode);
+  };
+
+  if (simpleFirst) {
+    stop_signal_with_integrated_memory_experiment.push(simpleSetup);
+    stop_signal_with_integrated_memory_experiment.push(simpleTestNode);
+    stop_signal_with_integrated_memory_experiment.push(integratedSetup);
+    stop_signal_with_integrated_memory_experiment.push(integratedTestNode);
+  } else {
+    stop_signal_with_integrated_memory_experiment.push(integratedSetup);
+    stop_signal_with_integrated_memory_experiment.push(integratedTestNode);
+    stop_signal_with_integrated_memory_experiment.push(simpleSetup);
+    stop_signal_with_integrated_memory_experiment.push(simpleTestNode);
+  }
 
   stop_signal_with_integrated_memory_experiment.push(postTaskBlock);
   stop_signal_with_integrated_memory_experiment.push(endBlock);
