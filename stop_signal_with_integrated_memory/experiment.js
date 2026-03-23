@@ -1552,7 +1552,7 @@ var testKeyReminderBlock = {
 /* ************************************ */
 var stop_signal_with_integrated_memory_experiment = [];
 var stop_signal_with_integrated_memory_init = () => {
-  jsPsych.pluginAPI.preloadImages(images);
+  jsPsych.pluginAPI.prseloadImages(images);
 
   jsPsych.data.addProperties({
     group_index: group_index,
