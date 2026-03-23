@@ -1,6 +1,6 @@
 /* ************************************ */
 /*       Define Helper Functions        */
-/* Version 1.4.0 March 22, 2026 LWG*/
+/* Version 1.4.1 March 23, 2026 LWG*/
 /* ************************************ */
 
 /* ---- Covert Bot / Automation Detection ---- */
