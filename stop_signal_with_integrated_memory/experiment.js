@@ -1,6 +1,6 @@
 /* ************************************ */
 /*       Define Helper Functions        */
-/* Version 1.5.0 March 25, 2026 LWG*/
+/* Version 1.5.1 March 25, 2026 LWG*/
 /* ************************************ */
 
 /* ---- Covert Bot / Automation Detection ---- */
@@ -1555,7 +1555,6 @@ var testKeyReminderBlock = {
   choices: ['Enter'],
   post_trial_gap: 0,
 };
-jsPsych.pluginAPI.preloadImages(images);
 
 /* ************************************ */
 /*         Experiment Timeline          */
