@@ -93,7 +93,16 @@ var attentionCheckData = [
   },
 ];
 attentionCheckData = shuffleArray(attentionCheckData);
-var currentAttentionCheckData = attentionCheckData.shift();
+var attentionCheckDataMaster = [...attentionCheckData]; // keep a copy for recycling
+
+function safeShiftAttentionCheck() {
+  if (attentionCheckData.length === 0) {
+    attentionCheckData = shuffleArray([...attentionCheckDataMaster]);
+  }
+  return attentionCheckData.shift();
+}
+
+var currentAttentionCheckData = safeShiftAttentionCheck();
 
 const getInstructFeedback =
   () => `<div class = centerbox><p class = center-block-text>
@@ -546,9 +555,9 @@ var goPracticeLen = 6;
 var simpleStopPracticeLen = 10;
 var memoryPracticeLen = 12;
 var integratedPracticeLen = 12;
-var numTrialsPerSimpleBlock = 30;
+var numTrialsPerSimpleBlock = 60;
 var numTrialsPerIntegratedBlock = 36;
-var numSimpleTestBlocks = 6;
+var numSimpleTestBlocks = 3;
 var numIntegratedTestBlocks = 12;
 
 var practiceThresh = 3;
@@ -1360,7 +1369,7 @@ var simpleTestNode = {
     }
     var avgRT = goRT / goResp, omissionRate = (goLen - goResp) / goLen, acc = goCorrect / goLen, stopFailureRate = stopResp / stopLen;
 
-    currentAttentionCheckData = attentionCheckData.shift();
+    currentAttentionCheckData = safeShiftAttentionCheck();
 
     if (simpleTestCount == numSimpleTestBlocks) {
       if (simpleFirst) {
@@ -1446,7 +1455,7 @@ var integratedTestNode = {
     var avgRT = goRT / goResp, omissionRate = (goLen - goResp) / goLen, acc = goCorrect / goLen, stopFailureRate = stopResp / stopLen;
 
 
-    currentAttentionCheckData = attentionCheckData.shift();
+    currentAttentionCheckData = safeShiftAttentionCheck();
 
     if (integratedTestCount == numIntegratedTestBlocks) {
       if (!simpleFirst) {

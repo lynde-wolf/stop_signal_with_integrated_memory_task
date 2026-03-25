@@ -43,16 +43,16 @@ Letters are displayed in spatial positions on screen (polygon vertices):
 
 ## Block Structure
 
-### Practice (10 trials each, 75% accuracy, max 3 attempts)
-1. Go-only practice: 10 trials (shapes, no stop)
+### Practice (75% accuracy, max 3 attempts)
+1. Go-only practice: 6 trials (shapes, no stop)
 2. Simple stop practice: 10 trials (shapes + star)
-3. Memory-only practice: 10 trials (letters + probe, no stop)
-4. Full integrated practice: 10 trials (letters + probe + star)
+3. Memory-only practice: 12 trials (letters + probe, no stop)
+4. Full integrated practice: 12 trials (letters + probe + star)
 
 ### Test
-- 6 simple stop signal blocks × 30 trials = 180 trials
-- 6 integrated memory blocks × 36 trials = 216 trials
-- **396 total test trials**
+- 6 simple stop signal blocks × 30 trials = 180 trials (120 go, 60 stop)
+- 12 integrated memory blocks × 36 trials = 432 trials (288 go, 144 stop)
+- **612 total test trials**
 
 ## Response Keys (counterbalanced by group_index)
 
