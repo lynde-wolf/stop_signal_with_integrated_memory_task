@@ -1,6 +1,6 @@
 /* ************************************ */
 /*       Define Helper Functions        */
-/* Version 1.4.1 March 23, 2026 LWG*/
+/* Version 1.5.0 March 25, 2026 LWG*/
 /* ************************************ */
 
 /* ---- Covert Bot / Automation Detection ---- */
@@ -1555,13 +1555,14 @@ var testKeyReminderBlock = {
   choices: ['Enter'],
   post_trial_gap: 0,
 };
+jsPsych.pluginAPI.preloadImages(images);
 
 /* ************************************ */
 /*         Experiment Timeline          */
 /* ************************************ */
 var stop_signal_with_integrated_memory_experiment = [];
 var stop_signal_with_integrated_memory_init = () => {
-  jsPsych.pluginAPI.prseloadImages(images);
+  jsPsych.pluginAPI.preloadImages(images);
 
   jsPsych.data.addProperties({
     group_index: group_index,
