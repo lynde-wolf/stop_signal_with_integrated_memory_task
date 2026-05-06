@@ -130,7 +130,7 @@ switch (cmd.fn) {
       accuracyThresh,
       rtThresh,
       letterRtThresh,
-      missedResponseThresh,
+      omissionResponseThresh,
       maxStopCorrect,
       minStopCorrect,
     };

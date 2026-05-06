@@ -73,7 +73,7 @@ class TestExperimentVariables:
         assert self.vars['integratedPracticeLen'] == 12
 
     def test_test_block_sizes(self):
-        assert self.vars['numTrialsPerSimpleBlock'] == 30
+        assert self.vars['numTrialsPerSimpleBlock'] == 60
         assert self.vars['numTrialsPerIntegratedBlock'] == 36
 
     def test_practice_thresholds(self):
@@ -728,15 +728,15 @@ class TestExperimentVariablesExtended:
         assert self.vars['letterRtThresh'] == 1250
 
     def test_missed_response_threshold(self):
-        assert self.vars['missedResponseThresh'] == 0.2
+        assert self.vars['omissionResponseThresh'] == 0.2
 
     def test_stop_correct_bounds(self):
         assert self.vars['maxStopCorrect'] == 0.75
         assert self.vars['minStopCorrect'] == 0.25
 
     def test_num_test_blocks(self):
-        assert self.vars['numSimpleTestBlocks'] == 6
-        assert self.vars['numIntegratedTestBlocks'] == 6
+        assert self.vars['numSimpleTestBlocks'] == 3
+        assert self.vars['numIntegratedTestBlocks'] == 12
 
 
 # ---------------------------------------------------------------
