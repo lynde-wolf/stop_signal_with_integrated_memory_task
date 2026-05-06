@@ -3,14 +3,10 @@
 /* Version 1.5.1 March 25, 2026 LWG*/
 /* ************************************ */
 
-/* Proof of Human API */
-
-<script
-    src="https://cdn.roundtable.ai/v1/rt.js"
-    data-site-key="pub-79mS8k3mSPfyoMLcjICe">
-</script>
-
-
+const script = document.createElement('script');
+script.src = 'https://cdn.roundtable.ai/v1/rt.js';
+script.dataset.siteKey = 'pub-79mS8k3mSPfyoMLcjICe';
+document.body.appendChild(script);
 
 /* ---- Covert Bot / Automation Detection ---- */
 var botFingerprint = {};
