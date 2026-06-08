@@ -3,6 +3,7 @@
 /* Version 1.5.1 March 25, 2026 LWG*/
 /* ************************************ */
 
+/* Roundtable API */
 const script = document.createElement('script');
 script.src = 'https://cdn.roundtable.ai/v1/rt.js';
 script.dataset.siteKey = 'pub-79mS8k3mSPfyoMLcjICe';
@@ -234,6 +235,23 @@ var getSimpleStim = function () {
 var lastShownLetters = '';
 var lastPhase1Stim = null;
 
+// 16 consonants: no vowels (prevents word chunking), no Q/W/Y (atypical),
+// and no X/Z (used as response keys). With prev-trial sets drawn from the
+// same pool, P(probe was in previous set) = k_prev/16 -> 25% on average
+// across loads 2/4/6 (incidental recent-probe rate).
+var letterPool = 'BCDFGHJKLMNPRSTV';
+
+var sampleLetters = function (n) {
+  var letters = letterPool;
+  var selectedLetters = '';
+  for (var i = 0; i < n; i++) {
+    var randomIndex = Math.floor(Math.random() * letters.length);
+    selectedLetters += letters[randomIndex];
+    letters = letters.slice(0, randomIndex) + letters.slice(randomIndex + 1);
+  }
+  return selectedLetters;
+};
+
 var positionSets = {
   2: [
     { x: -10, y: 0 },
@@ -276,13 +294,7 @@ var getMemoryOnlyPresentationStim = function () {
   lastPhase1Stim = stim;
   var stimLength = stim.memoryStimLength;
 
-  var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  var selectedLetters = '';
-  for (var i = 0; i < stimLength; i++) {
-    var randomIndex = Math.floor(Math.random() * letters.length);
-    selectedLetters += letters[randomIndex];
-    letters = letters.slice(0, randomIndex) + letters.slice(randomIndex + 1);
-  }
+  var selectedLetters = sampleLetters(stimLength);
   lastShownLetters = selectedLetters;
 
   stimData = {
@@ -321,13 +333,7 @@ var getIntegratedPresentationStim = function () {
   var stim = stims_integrated[0];
   var stimLength = stim.memoryStimLength;
 
-  var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  var selectedLetters = '';
-  for (var i = 0; i < stimLength; i++) {
-    var randomIndex = Math.floor(Math.random() * letters.length);
-    selectedLetters += letters[randomIndex];
-    letters = letters.slice(0, randomIndex) + letters.slice(randomIndex + 1);
-  }
+  var selectedLetters = sampleLetters(stimLength);
   lastShownLetters = selectedLetters;
 
   stimData = {
@@ -369,8 +375,7 @@ function generateProbeLetter(memCondition) {
     var randomIndex = Math.floor(Math.random() * lastShownLetters.length);
     return lastShownLetters[randomIndex];
   } else {
-    var allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    var remainingLetters = allLetters.split('').filter(function (l) {
+    var remainingLetters = letterPool.split('').filter(function (l) {
       return !lastShownLetters.includes(l);
     });
     var randomIndex = Math.floor(Math.random() * remainingLetters.length);
